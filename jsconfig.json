@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"moduleResolution": "node",
+		"baseUrl": ".",
+		"paths": {
+			"models/": [
+				"./models"
+			],
+			"routes/": [
+				"./routes"
+			],
+			"views/": [
+				"./views"
+			]
+		}
+	},
+	"include": [
+		"."
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
