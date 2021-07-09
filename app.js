@@ -2,6 +2,8 @@
 const express = require('express');
 const handlebars = require('express-handlebars');
 // const mongoose = require('mongoose');
+const path = require('path');
+
 const app = express();
 
 // Configuration
@@ -14,8 +16,11 @@ app.set('view engine', 'handlebars');
 	// Mongoose
 		// Soon
 
+	//public
+app.use(express.static(path.join(/*__dirname stores the absolute path of the project*/__dirname, 'public')));
+
 // Routes
-const admin = require('routes/admin');
+const admin = require('./routes/admin');
 
 app.use('/admin', admin);
 
