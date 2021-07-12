@@ -8,6 +8,17 @@
 		<div class="card-body">
 			<h4>{{name}}</h4>
 			<small>Slug: {{slug}}</small>
+			<div class="mt-4">
+				<a href="/admin/categories/edit/{{_id}}">
+					<button class="btn btn-success">Edit</button>
+				</a>
+			</div>
+			<form action="/admin/categories/delete" method="POST" class="mt-2">
+				<input type="hidden" name="id" value="{{_id}}">
+				<button type="submit" class="btn btn-danger">Delete</button>
+			</form>
 		</div>
 	</div>
+{{else}}
+	<h4 class="mt-4">No categories found!</h4>
 {{/each}}
