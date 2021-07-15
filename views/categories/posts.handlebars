@@ -1,0 +1,24 @@
+<div class="card">
+	<div class="card-body"
+		style="background-color: #adb5bd;">
+		<h1>{{category.name}}</h1>
+	</div>
+</div>
+
+{{#each posts}}
+<div class="card mt-4">
+	<div class="card-body">
+		<h3>{{title}}</h3>
+		<p>{{description}}</p>
+
+		<a href="/post/{{slug}}">
+			<button class="btn btn-success">Read more!</button>
+		</a>
+
+		<hr>
+		<small>Posted at: {{date}}</small>
+	</div>
+</div>
+{{else}}
+<h4>No posts found!</h4>
+{{/each}}

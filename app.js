@@ -9,6 +9,8 @@ const flash = require('connect-flash');
 // Loading models
 require('./models/Post');
 const Post = mongoose.model('posts');
+require('./models/Category');
+const Category = mongoose.model('categories');
 
 const app = express();
 
@@ -49,6 +51,7 @@ app.use(express.static(path.join(/*__dirname stores the absolute path of the pro
 
 // Routes
 const admin = require('./routes/admin');
+const { post } = require('./models/Post');
 
 app.get('/', async (req, res) => {
 	try {
@@ -72,16 +75,54 @@ app.get('/post/:slug', async (req, res) => {
 		}
 
 	} catch (err) {
-		req.flash('error_msg', 'An internal error ocurred!');
+		req.flash('error_msg', 'An internal error occurred!');
 		res.redirect('/');
 	}
 });
 
-app.get('/404', (req, res) => {
-	res.send('Error: 404!');
+app.get('/categories', async (req, res) => {
+	try { 
+		const categories = await Category.find();
+		res.render('categories/index', {categories: categories.map(e => e.toJSON())});
+	} catch (err) {
+		req.flash('error_msg', 'An internal error occurred when listing categories!');
+		res.redirect('/');
+	}
+});
+
+app.get('/categories/:slug', async (req, res) => {
+	const { slug } = req.params;
+	
+	try {
+		const category = await Category.findOne({slug});
+		
+		if (category) {
+			try {
+				const posts = await Post.find({category: category._id});
+				res.render('categories/posts', { 
+					category: category.toJSON(),
+					posts: posts.map(e => e.toJSON()),
+				});
+			} catch (err) {
+				req.flash('error_msg', 'An error occurred when list the posts of this category');
+				res.redirect('/categories');
+			}
+		}
+		else {
+			req.flash('error_msg', 'This category does not exists!');
+			res.redirect('/');
+		}
+	} catch (err) {
+		req.flash('error_msg', 'An internal error occurred when load the page of this category!');
+		res.redirect('/');
+	}
 });
 
 app.use('/admin', admin);
+
+app.get('/404', (req, res) => {
+	res.send('Error: 404!');
+});
 
 // Others
 const PORT = 8081;
