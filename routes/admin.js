@@ -3,17 +3,18 @@ const express = require('express');
 const { model } = require('mongoose');
 require('../models/Category');
 require('../models/Post');
+const { isAdmin } = require('../helpers/isAdmin');
 
 const router = express.Router();
 const Category = model('categories');
 const Post = model('posts');
 
 // Routes
-router.get('/', (req, res) => {
+router.get('/', isAdmin, (req, res) => {
 	res.render('admin/index');
 });
 
-router.get('/categories', async (req, res) => {
+router.get('/categories', isAdmin, async (req, res) => {
 	try {
 		const categories = await Category.find().sort({ date: 'desc' });
 		res.render('admin/categories', { 
@@ -25,11 +26,11 @@ router.get('/categories', async (req, res) => {
 	}
 });
 
-router.get('/categories/add', (req, res) => {
+router.get('/categories/add', isAdmin, (req, res) => {
 	res.render('admin/add_category');
 });
 
-router.post('/categories/new', async (req, res) => {
+router.post('/categories/new', isAdmin, async (req, res) => {
 	const { name, slug } = req.body;
 	const errors = [];
 
@@ -60,7 +61,7 @@ router.post('/categories/new', async (req, res) => {
 	}
 });
 
-router.get('/categories/edit/:id', async (req, res) => {
+router.get('/categories/edit/:id', isAdmin, async (req, res) => {
 	const { id } = req.params;
 	try {
 		const category = await Category.findOne({_id: id});
@@ -73,7 +74,7 @@ router.get('/categories/edit/:id', async (req, res) => {
 	}
 });
 
-router.post('/categories/edit', async (req, res) => {
+router.post('/categories/edit', isAdmin, async (req, res) => {
 	const { id, name, slug } = req.body;
 	const errors = [];
 
@@ -105,7 +106,7 @@ router.post('/categories/edit', async (req, res) => {
 	}
 });
 
-router.post('/categories/delete', async (req, res) => {
+router.post('/categories/delete', isAdmin, async (req, res) => {
 	const { id } = req.body;
 	
 	try {
@@ -118,7 +119,7 @@ router.post('/categories/delete', async (req, res) => {
 	}
 });
 
-router.get('/posts', async (req, res) => {
+router.get('/posts', isAdmin, async (req, res) => {
 	try {
 		const posts = await Post.find().populate('category').sort({date: 'desc'});
 		res.render('admin/posts', { posts: posts.map(e => e.toJSON()) });
@@ -128,7 +129,7 @@ router.get('/posts', async (req, res) => {
 	}
 });
 
-router.get('/posts/add', async (req, res) => {
+router.get('/posts/add', isAdmin, async (req, res) => {
 	try {
 		const categories = await Category.find();
 		res.render('admin/add_post', { categories: categories.map(e => e.toJSON()) });
@@ -138,7 +139,7 @@ router.get('/posts/add', async (req, res) => {
 	}
 });
 
-router.post('/posts/new', async (req, res) => {
+router.post('/posts/new', isAdmin, async (req, res) => {
 	const { 
 		title, 
 		slug, 
@@ -180,7 +181,7 @@ router.post('/posts/new', async (req, res) => {
 	}
 });
 
-router.get('/posts/edit/:id', async (req, res) => {
+router.get('/posts/edit/:id', isAdmin, async (req, res) => {
 	const { id } = req.params;
 	
 	try {
@@ -196,7 +197,7 @@ router.get('/posts/edit/:id', async (req, res) => {
 	}
 });
 
-router.post('/posts/edit', async (req, res) => {
+router.post('/posts/edit', isAdmin, async (req, res) => {
 	const {
 		id,
 		title,
@@ -246,7 +247,7 @@ router.post('/posts/edit', async (req, res) => {
 	}
 });
 
-router.get('/posts/delete/:id', async (req, res) => {
+router.get('/posts/delete/:id', isAdmin, async (req, res) => {
 	const { id } = req.params;
 
 	try {

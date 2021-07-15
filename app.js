@@ -5,12 +5,15 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
 
 // Loading models
 require('./models/Post');
 const Post = mongoose.model('posts');
 require('./models/Category');
 const Category = mongoose.model('categories');
+
+require('./config/auth')(passport);
 
 const app = express();
 
@@ -21,11 +24,17 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true,
 }));
+	// Passport (is important that it is between Session and Flash)
+app.use(passport.initialize());
+app.use(passport.session());
+	// Flash
 app.use(flash());
 	// Middleware
 app.use((req, res, next) => {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
+	res.locals.error = req.flash('error');
+	res.locals.user = req.user || null;
 	next();
 });
 	// Express
@@ -51,7 +60,7 @@ app.use(express.static(path.join(/*__dirname stores the absolute path of the pro
 
 // Routes
 const admin = require('./routes/admin');
-const { post } = require('./models/Post');
+const user = require('./routes/user');
 
 app.get('/', async (req, res) => {
 	try {
@@ -118,11 +127,12 @@ app.get('/categories/:slug', async (req, res) => {
 	}
 });
 
-app.use('/admin', admin);
-
 app.get('/404', (req, res) => {
 	res.send('Error: 404!');
 });
+
+app.use('/admin', admin);
+app.use('/user', user);
 
 // Others
 const PORT = 8081;
