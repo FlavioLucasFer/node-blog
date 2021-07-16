@@ -1,6 +1,6 @@
 <h2>Categories:</h2>
 <hr>
-<a href="/admin/categories/add">
+<a href="{{adminRoute}}/{{newCategoryRoute}}">
 	<button class="btn btn-success">New</button>
 </a>
 {{#each categories}}
@@ -9,11 +9,11 @@
 			<h4>{{name}}</h4>
 			<small>Slug: {{slug}}</small>
 			<div class="mt-4">
-				<a href="/admin/categories/edit/{{_id}}">
+				<a href="{{adminRoute}}/{{editCategoryRoute}}/{{_id}}">
 					<button class="btn btn-success">Edit</button>
 				</a>
 			</div>
-			<form action="/admin/categories/delete" method="POST" class="mt-2">
+			<form action="{{adminRoute}}/{{deleteCategoryRoute}}" method="POST" class="mt-2">
 				<input type="hidden" name="id" value="{{_id}}">
 				<button type="submit" class="btn btn-danger">Delete</button>
 			</form>

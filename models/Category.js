@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const { Schema, model } = require("mongoose");
 
 const Category = new Schema({
 	name: {
@@ -16,4 +15,4 @@ const Category = new Schema({
 	},
 });
 
-mongoose.model('categories', Category);
+model('categories', Category);

@@ -17,8 +17,10 @@ const User = new Schema({
 		type: String,
 		default: 'N', // N = Normal User || A = Admin
 	},
+	date: {
+		type: Date,
+		default: Date.now(),
+	},
 });
 
 model('users', User);
-
-module.exports = User;

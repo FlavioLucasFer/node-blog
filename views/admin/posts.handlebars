@@ -1,6 +1,6 @@
 <h2>Posts:</h2>
 <hr>
-<a href="/admin/posts/add">
+<a href="{{adminRoute}}/{{newPostRoute}}">
 	<button class="btn btn-success">New</button>
 </a>
 
@@ -14,10 +14,10 @@
 			<small>Category: {{category.name}}</small>
 
 			<br>
-			<a href="/admin/posts/edit/{{_id}}">
+			<a href="{{adminRoute}}/{{editPostRoute}}/{{_id}}">
 				<button class="btn btn-success mt-2">Edit</button>
 			</a>
-			<a href="/admin/posts/edit/{{_id}}">
+			<a href="{{adminRoute}}/{{deletePostRoute}}/{{_id}}">
 				<button class="btn btn-danger mt-2">Delete</button>
 			</a>
 		</div>

@@ -1,21 +1,19 @@
 // Loading modules
+	// Third party modules
 const express = require('express');
 const handlebars = require('express-handlebars');
-const mongoose = require('mongoose');
-const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
+const mongoose = require('mongoose');
 const passport = require('passport');
-
-// Loading models
-require('./models/Post');
-const Post = mongoose.model('posts');
-require('./models/Category');
-const Category = mongoose.model('categories');
-
-require('./config/auth')(passport);
-
+const path = require('path');
 const app = express();
+	// Authentication 
+require('./config/auth')(passport);
+	// Routes
+const appRouter = require('./routes/app');
+const userRouter = require('./routes/user');
+const adminRouter = require('./routes/admin');
 
 // Configuration
 	// Session
@@ -41,7 +39,10 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 	// Handlebars
-app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
+app.engine('handlebars', handlebars({ 
+	helpers: require('./views/helpers/handlebars').helpers,
+	defaultLayout: 'main', 
+}));
 app.set('view engine', 'handlebars');
 	// Mongoose
 mongoose.Promise = global.Promise;
@@ -54,88 +55,17 @@ mongoose.connect('mongodb://localhost/node-blog', {
 	.catch(err => {
 		console.log(`Failed to connect to database: ${err}`);
 	});
-
 	//public
 app.use(express.static(path.join(/*__dirname stores the absolute path of the project*/__dirname, 'public')));
 
 // Routes
-const admin = require('./routes/admin');
-const user = require('./routes/user');
-
-app.get('/', async (req, res) => {
-	try {
-		const posts = await Post.find().populate('category').sort({date: 'desc'});
-		res.render('index', { posts: posts.map(e => e.toJSON()) });
-	} catch (err) {
-		req.flash('error_msg', 'An internal error ocurred!');
-		res.redirect('/404');
-	}
-});
-
-app.get('/post/:slug', async (req, res) => {
-	const { slug } = req.params;
-	try {
-		const post = await Post.findOne({slug})
-		
-		if (post) res.render('post/index', {post: post.toJSON()});
-		else {
-			req.flash('error_msg', 'This post does not exists!');
-			res.redirect('/');
-		}
-
-	} catch (err) {
-		req.flash('error_msg', 'An internal error occurred!');
-		res.redirect('/');
-	}
-});
-
-app.get('/categories', async (req, res) => {
-	try { 
-		const categories = await Category.find();
-		res.render('categories/index', {categories: categories.map(e => e.toJSON())});
-	} catch (err) {
-		req.flash('error_msg', 'An internal error occurred when listing categories!');
-		res.redirect('/');
-	}
-});
-
-app.get('/categories/:slug', async (req, res) => {
-	const { slug } = req.params;
-	
-	try {
-		const category = await Category.findOne({slug});
-		
-		if (category) {
-			try {
-				const posts = await Post.find({category: category._id});
-				res.render('categories/posts', { 
-					category: category.toJSON(),
-					posts: posts.map(e => e.toJSON()),
-				});
-			} catch (err) {
-				req.flash('error_msg', 'An error occurred when list the posts of this category');
-				res.redirect('/categories');
-			}
-		}
-		else {
-			req.flash('error_msg', 'This category does not exists!');
-			res.redirect('/');
-		}
-	} catch (err) {
-		req.flash('error_msg', 'An internal error occurred when load the page of this category!');
-		res.redirect('/');
-	}
-});
-
-app.get('/404', (req, res) => {
-	res.send('Error: 404!');
-});
-
-app.use('/admin', admin);
-app.use('/user', user);
+app.use('/', appRouter);
+app.use('/admin', adminRouter);
+app.use('/user', userRouter);
 
 // Others
 const PORT = 8081;
+
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`);
 });

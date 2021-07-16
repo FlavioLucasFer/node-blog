@@ -7,7 +7,7 @@
 
 <div class="card">
 	<div class="card-body">
-		<form action="/admin/posts/edit" method="POST">
+		<form action="{{adminRoute}}/{{editPostRoute}}" method="POST">
 			<input type="hidden" value="{{post._id}}" name="id">
 			
 			<label for="title">Title: </label>

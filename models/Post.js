@@ -29,5 +29,3 @@ const Post = new Schema({
 });
 
 model('posts', Post);
-
-module.exports = Post;

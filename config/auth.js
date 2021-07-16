@@ -8,7 +8,6 @@ const User = mongoose.model('users');
 function auth(passport) {
 	passport.use(new localStrategy({
 		usernameField: 'email',
-		passwordField: 'password',
 	}, async (email, password, done) => {
 		try {
 			const user = await User.findOne({email});
